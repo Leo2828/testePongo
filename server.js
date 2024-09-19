@@ -43,7 +43,8 @@ class GameState {
     this.veloy = 5;
     this.width = 615;
     this.height = 800;
-    this.player1 = {pos: 0};
+    this.player1Pos = 615/2;
+    this.player2Pos = 615/2;
   }
 
   ballUpdate() {
@@ -55,7 +56,7 @@ class GameState {
       this.veloy = -this.veloy;
     }
 
-    if(this.ball.y == this.height-20 && this.ball.x >= player1Pos && this.ball.x <= player1Pos+100 || this.ball.y == 20 && this.ball.x >= player2Pos && this.ball.x <= player2Pos+100){
+    if(this.ball.y == this.height-20 && this.ball.x >= this.player1Pos && this.ball.x <= this.player1Pos+100 || this.ball.y == 20 && this.ball.x >= this.player2Pos && this.ball.x <= this.player2Pos+100){
       this.veloy = -this.veloy;
     }
 
@@ -76,8 +77,6 @@ class GameState {
 }
 
 const gamestate = new GameState();
-let player1Pos = 615/2;
-let player2Pos = 615/2;
 
 let player1Score = 0;
 let player2Score = 0;
@@ -85,9 +84,11 @@ let player2Score = 0;
 const rooms = [];
 let roomUsers = 0;
 
+let roomID = app.locals.roomID;
+
 io.on("connection", (socket) => {
   socket.on('userConnection', ()=> {
-    const roomID = app.locals.roomID;
+    roomID = app.locals.roomID;
     console.log(`[${socket.id}] Usuário Conectado`);
     console.log(roomID);
 
@@ -101,13 +102,17 @@ io.on("connection", (socket) => {
     }
 
     socket.on('player1Mov', (pos) => {
-      player1Pos = pos;
-      io.to(roomID).emit('player1Mov', pos);
+      console.log("p1"+pos);
+      gamestate.player1Pos = pos;
+      //player1Pos = pos;
+      //io.to(roomID).emit('player1Mov', pos);
     })
     
     socket.on('player2Mov', (pos) => {
-      player2Pos = pos;
-      io.to(roomID).emit('player2Mov', pos);
+      console.log("p2"+pos);
+      gamestate.player2Pos = pos;
+      //player2Pos = pos;
+      //io.to(roomID).emit('player2Mov', pos);
     })
 
     socket.on('reset', (reset) => {
@@ -141,9 +146,9 @@ io.on("connection", (socket) => {
 
 //sync data to client
 setInterval(() => {
-  io.emit('score', player1Score, player2Score);
+  io.to(roomID).emit('score', player1Score, player2Score);
   gamestate.ballUpdate();
-  io.emit("game-sync", gamestate);
+  io.to(roomID).emit("game-sync", gamestate);
   //console.log(gamestate);
 
   //io.emit("game-sync", gamestate);

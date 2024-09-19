@@ -86,14 +86,25 @@
     }
 
       class Paddle {
-        constructor(y, color) {
+        constructor(y, color, player1) {
             this.color = color;
             this.velocity = 10;
             this.pos = width/2;
             this.y = y;
+            this.player1 = player1;
         }
 
         update() {
+          if(gamestate) {
+            if(this.player1){
+              console.log('1');
+              this.pos = gamestate.player1Pos;
+            }else{
+              console.log('2');
+              this.pos = gamestate.player2Pos;
+            }
+          }
+
           if(this.pos > width - 100){
             this.pos = width - 100;
           }else if(this.pos < 15){
@@ -222,8 +233,8 @@
       })
 
       let bola = new Bola(80, 80, 5, 10, "white", 10);
-      let player1 = new Paddle(canvas.height - 15, "blue");
-      let player2 = new Paddle(0, "red");
+      let player1 = new Paddle(canvas.height - 15, "blue", true);
+      let player2 = new Paddle(0, "red", false);
 
       function loop() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -235,11 +246,7 @@
         for (let i = 15*2; i < width - 15; i += 15 * 2) {
           ctx.fillRect(i, height / 2 - 15 / 2, 15, 15);
         }
-
         
-
-        
-
         player1.draw();
         player1.update();
 
@@ -258,7 +265,6 @@
       });
 
       socket.on("game-sync", (data) => {
-        //console.log(data);
         gamestate = data;
       });
     </script>
