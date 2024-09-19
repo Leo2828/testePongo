@@ -95,13 +95,7 @@
         }
 
         update() {
-          if(gamestate) {
-            if(this.player1){
-              this.pos = gamestate.player1Pos;
-            }else{
-              this.pos = gamestate.player2Pos;
-            }
-          }
+  
 
           if(this.pos > width - 100){
             this.pos = width - 100;
@@ -264,6 +258,12 @@
 
       socket.on("game-sync", (data) => {
         gamestate = data;
+
+        if(gamestate) {
+            player2.pos = gamestate.player2Pos;        
+            player1.pos = gamestate.player1Pos;
+          }
+
       });
     </script>
 </html>
