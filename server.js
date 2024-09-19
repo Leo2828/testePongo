@@ -89,8 +89,6 @@ let roomID = app.locals.roomID;
 io.on("connection", (socket) => {
   socket.on('userConnection', ()=> {
     roomID = app.locals.roomID;
-    console.log(`[${socket.id}] Usuário Conectado`);
-    console.log(roomID);
 
     if(rooms.indexOf(roomID) == -1){
       socket.join(roomID);
@@ -102,14 +100,12 @@ io.on("connection", (socket) => {
     }
 
     socket.on('player1Mov', (pos) => {
-      console.log("p1"+pos);
       gamestate.player1Pos = pos;
       //player1Pos = pos;
       //io.to(roomID).emit('player1Mov', pos);
     })
     
     socket.on('player2Mov', (pos) => {
-      console.log("p2"+pos);
       gamestate.player2Pos = pos;
       //player2Pos = pos;
       //io.to(roomID).emit('player2Mov', pos);
@@ -126,8 +122,6 @@ io.on("connection", (socket) => {
     socket.on('start', () => {
       io.to(roomID).emit('start', '');
     })
-
-    console.log(roomUsers);
 
     socket.on("disconnect", () => {
       console.log(`[${socket.id}] Usuário Desconectado`);
